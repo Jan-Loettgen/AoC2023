@@ -38,6 +38,7 @@ int main()
     int j = 0;
     int k = 0;
 
+    int jstart;
     int jl;
     int ju;
     int il;
@@ -63,9 +64,8 @@ int main()
         lines[i][j] = ch;
         if (ch == '\n') {
             lines[i][j] = '\0';
-            printf("%d ,%d, %d\n", i, j, lines[i][j-1]);
             i++;
-            j=0;
+            j=-1;
         }
         j++;
 
@@ -75,7 +75,7 @@ int main()
 
     for (int i = 0; i<N_ROWS; i++){
         reading_num = false;
-        for (int j = 0; j<N_COLS+2; j++) {
+        for (int j = 0; j<N_COLS+1; j++) {
             ch = lines[i][j];
             if (reading_num) {
                 if (!(ch >= '0' && ch <= '9' ) || j == N_COLS){
@@ -90,33 +90,33 @@ int main()
                         iu = i+1;
                     }
 
-                    if (j == N_COLS) {
-                        ju = j+1;
+                    if (jstart == 0) {
+                        jl = 0;
                     } else {
-                        ju = j+1;
+                        jl = jstart-1;
+                    }
+                    
+                    if (j == N_COLS) {
+                        ju = j-1;
+                    } else {
+                        ju = j;
                     }
 
-                    if (str2int(lines[i]+jl+1, j-jl-1) == 543) {
-                        printf("%s\n", lines[i]+jl-1);
-                        printf("%d\n", str2int(lines[i]+jl+1, j-jl-1));
-                        printf("%d, %d, %d, %d, %d\n", jl, j, ju, il, iu);
-                        return 0;
-                    }
-
-                    if (has_sym_adj(lines, jl=jl-1, ju=ju, il=il, iu = iu)) {
+                    //printf("%d\n", str2int(lines[i]+jstart, j-jstart));
+                    if (has_sym_adj(lines, jl=jl, ju=ju, il=il, iu = iu)) {
                         // printf("%s\n", lines[i]+jl-1);
                         // printf("%d\n", str2int(lines[i]+jl+1, j-jl-1));
                         // printf("%d, %d, %d, %d, %d\n", jl, j, ju, il, iu);
                         // return 0;
-                        sum += str2int(lines[i]+jl+1, j-jl-1);
-                        printf("%d\n", str2int(lines[i]+jl+1, j-jl-1));
+                        sum += str2int(lines[i]+jstart, j-jstart);
+                        printf("%d\n", str2int(lines[i]+jstart, j-jstart));
                     }
                     reading_num = false;
                 }
             } else {
                 if (ch >= '0' && ch <= '9' ){
                     reading_num = true;
-                    jl = j;
+                    jstart = j;
                 }
             }
             // if (i == 5) {
