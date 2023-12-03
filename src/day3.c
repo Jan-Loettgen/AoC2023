@@ -29,6 +29,37 @@ bool has_sym_adj(char lines[N_ROWS][N_COLS+1], int jl, int ju, int il, int iu){
     return false;
 }
 
+int find_nums(int nums[N_ROWS][N_COLS+1], int i,int j){
+    int count = 0;
+    int dup = false;
+    int nums_found[9];
+
+    for (int a = -1; a<2; a++) {
+        for (int b = -1; b<2; b++) {
+            if (nums[i + a][j + b] != 0 ) {
+                printf("%d\n", nums[i + a][j + b]);
+                dup = false;
+                for (int c = 0; c<count;c++){
+                    if (nums[i + a][j + b] == nums_found[c]) {
+                        dup = true;
+                    }
+                }
+                if (!dup){
+                    nums_found[count] =  nums[i + a][j + b];
+                    count++;
+                }
+            } 
+
+        }
+    }
+    if (count == 2) {
+        return nums_found[0] * nums_found[1];
+    } else {
+        return 0;
+    }
+}
+
+
 // Driver code
 int main()
 {
@@ -47,10 +78,11 @@ int main()
     int num;
     int num_start;
     char lines[N_ROWS][N_COLS+1];
+    int nums[N_ROWS][N_COLS+1];
+
     char str_num[16];
     bool reading_num = false;
     bool sym_adj = false;
-
 
     // Opening file in reading mode
     ptr = fopen("/home/luca/Desktop/fun/AoC2023/inputs/day3.txt", "r");
@@ -70,15 +102,32 @@ int main()
         j++;
 
     } while (ch != EOF);
-    // printf("%ld\n %s", strlen(lines[0]+1),lines[0]+1);
-    // return 0;
+
+    for (int i = 0; i<N_ROWS; i++){
+        for (int j = 0; j<N_COLS+1; j++) {
+            nums[i][j] = 0;
+        }
+    }
 
     for (int i = 0; i<N_ROWS; i++){
         reading_num = false;
         for (int j = 0; j<N_COLS+1; j++) {
             ch = lines[i][j];
+
+            if (ch == '*'){
+
+            }
+
+
+
             if (reading_num) {
                 if (!(ch >= '0' && ch <= '9' ) || j == N_COLS){
+
+
+                    for (int f= 0; f <(j-jstart); f++) {
+                        nums[i][j-f-1] = str2int(lines[i]+jstart, j-jstart);
+                    }
+
                     if (i == 0) {
                         il = i;
                         iu = i+1;
@@ -102,12 +151,7 @@ int main()
                         ju = j;
                     }
 
-                    //printf("%d\n", str2int(lines[i]+jstart, j-jstart));
                     if (has_sym_adj(lines, jl=jl, ju=ju, il=il, iu = iu)) {
-                        // printf("%s\n", lines[i]+jl-1);
-                        // printf("%d\n", str2int(lines[i]+jl+1, j-jl-1));
-                        // printf("%d, %d, %d, %d, %d\n", jl, j, ju, il, iu);
-                        // return 0;
                         sum += str2int(lines[i]+jstart, j-jstart);
                         printf("%d\n", str2int(lines[i]+jstart, j-jstart));
                     }
@@ -119,12 +163,21 @@ int main()
                     jstart = j;
                 }
             }
-            // if (i == 5) {
-            //     return 0;
-            // }
+        }
+
+    }
+    int sum2 = 0;
+    for (int i = 0; i<N_ROWS; i++){
+        for (int j = 0; j<N_COLS+1; j++) {
+            ch = lines[i][j];
+            if (ch == '*') {
+                sum2 += find_nums(nums, i, j);              
+            }
         }
     }
+
     printf("Part 1 solution: %d\n", sum);
+    printf("Part 1 solution: %d\n", sum2);
 
     fclose(ptr);
     return 0;
