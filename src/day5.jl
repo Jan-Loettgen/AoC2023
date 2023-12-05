@@ -105,10 +105,10 @@ for seed_range in seed_ranges                   # iterate over seed ranges
                         push!(next_ranges, (p1+ds, p2+ds))
                         p1 = p2
                         continue
-                    elseif d1 <= 0 && d2 >= 0
-                        @assert false
-                        push!(next_ranges, (m1+ds, m2+ds)) # (m1, m2) is mapped
-                        p1 = m2
+                    # elseif d1 <= 0 && d2 >= 0
+                    #     @assert false
+                    #     push!(next_ranges, (m1+ds, m2+ds)) # (m1, m2) is mapped
+                    #     p1 = m2
                     else
                         push!(next_ranges, (p1, m1))
                         p1 = p2
