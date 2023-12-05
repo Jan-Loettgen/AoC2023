@@ -1,6 +1,6 @@
 
-@time begin
-f = open("/home/bucketking/Documents/fun/AoC2023/inputs/day5.txt", "r")
+#@time begin
+f = open("./inputs/day5.txt", "r")
 
 j= 0
 mappings = []
@@ -135,6 +135,5 @@ end
 
 println("Solution part 2: ", lowest)
 close(f)
-end
 
 
