@@ -1,58 +1,103 @@
-function count_permutations(pos, key)
-    # create an array that is pos but stores the number of unknowns in a row if
-    n_blocks = length(key)
-    permute_block(pos[1], key)
+function count_permutations(row, keys)
 
-end
+    global countmap
 
-function permute_block(block, key)
-    idx = make_idx(block)
+    if haskey(countmap, (row, keys))
+        return countmap[(row, keys)]
+    end
 
-    println(block)
-    println(key)
-    println(idx)
+    if length(row) - keys[1] < 2
+        countmap[(row, keys)] = 0
+        return 0
+    end
 
-    s = 0
-    for k in key
-        for i in idx
-            if i - k + 1 > 0
-            s += i - k + 1
+    i = keys[1]+1
+    sum = 0
+    hash_i = 0
+
+    if '#' in row[1:keys[1]+1]
+        hash_i = find_hash(row)
+    end
+
+    while i <= length(row) - 1
+        if row[i] == '#' && hash_i == 0
+            hash_i = i 
+            if length(keys) == 1
+                sum = 0
             end
         end
-    end
+        if fits(row[i-keys[1]:i+1])
+            if length(keys) == 1
+                if !('#' in row[i+1:end])
+                    sum += 1
+                end
+            else
+                sum += count_permutations(row[i+1: end], keys[2:end])
+            end
+        end
 
+        if hash_i != 0 && i-hash_i >= keys[1]
+            break #return sum
+        end
+        i += 1
+    end
+    countmap[(row, keys)] = sum
+    return sum
 end
 
-function make_idx(block) # [broke, unknown, broke, unknown]
-    idx = []
-    if block[1] == '?'
-        push!(idx, 0)
+function find_hash(row)
+    i = 1
+    while row[i] != '#' && i < length(row)
+        i += 1
     end
-    active_c = block[1]
-    count = 0
-    for c in block
-        if c == active_c
-            count += 1
-        else
-            push!(idx, count)
-            active_c = c
-            count = 1
+    return i
+end
+
+function fits(row)
+    global fitmap
+    if haskey(fitmap, row)
+        return fitmap[row]
+    end
+
+    n = length(row) - 2
+    if row[1] == '#' || row[end] == '#'
+        fitmap[row] = false
+        return false
+    end
+
+    for i in 1:n
+        if row[i+1] == '.'
+            fitmap[row] = false
+            return false
         end
     end
-    push!(idx, count)
-    return idx
+    fitmap[row] = true
+    return true
 end
-
-
 
 f = open("./inputs/day12.txt", "r")
 
 lines = readlines(f)
+global fitmap = Dict()
+global countmap = Dict()
 
+sum1 = 0
+sum2 = 0
+count = 0
 for line in lines
     split_line = split(line, ' ')
-    pos = [i for i in split(split_line[1], '.') if i != ""]
+    row = "." * split_line[1] * "."
     key = [parse(Int64, i) for i in split(split_line[2], ',')]
-    count_permutations(pos, key)
-    exit()
+
+    global sum1 += count_permutations(row, key)
+
+    key2 = [i for j in 1:5 for i in key]
+    row2 = "."
+    for i in 1:4
+        row2 = row2 * split_line[1] * "?"
+    end
+    row2 = row2*split_line[1] * "."
+    global sum2 += count_permutations(row2, key2)
 end
+println(sum1)
+println(sum2)

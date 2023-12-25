@@ -2,7 +2,6 @@ N = 140
 gal_shift = 999999
 using Formatting
 f = open("./inputs/day11.txt", "r")
-
 lines = readlines(f)
 
 map = Array{Int8}(undef, (N, N))
