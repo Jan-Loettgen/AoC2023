@@ -98,10 +98,6 @@ while true
     elseif dir == 3 && map_clean[cur_i, cur_j+1] == '.'
         map_clean[cur_i, cur_j+1] = '~'
     end
-
-
-
-    
 end
 
 to_check = []
@@ -151,9 +147,6 @@ for i in range(1, N)
         end
     end
 end
-
-#println(sum)
-#println(N*N - sum - steps - 1)
 
 for i in range(1, N)
     println(join(map_clean[i, :]))

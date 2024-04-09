@@ -1,49 +1,33 @@
-function find_mirror(line)
-    n = length(line)
-
-    for i in 1:(n-1)
-        if line[i] == line[i+1]
-            if i == 1 || i == n-1
-                return i
-            end
-
-            j = i - 1
-            k = i + 2
-            while line[j] == line[k]
-                if j == 1 || k == n
-                    return i
-                end
-                j = j - 1
-                k = k + 1
-            end
-        end
-    end
-    return 0
-end
-
-function find_smudge(line)
+function find_reflection(line, n_smudges = 0)
     n = length(line)
     global bins
-
-    smudge_avail = true
     for i in 1:(n-1)
+        smudges = 0
         if line[i] == line[i+1] || (abs(line[i] - line[i+1]) in bins)
-            if i == 1 || i == n-1
-                return i
+            if line[i] != line[i+1]
+                smudges += 1
             end
 
-            if line[i] != line[i+1]
-                smudge_avail = false
+            if (i == 1 || i == n-1)
+                if smudges == n_smudges
+                    return i
+                else
+                    continue
+                end
             end
 
             j = i - 1
             k = i + 2
-            while line[j] == line[k] || (smudge_avail && (abs(line[i] - line[i+1]) in bins))
+            while line[j] == line[k] || ((smudges <= n_smudges) && (abs(line[j] - line[k]) in bins))
                 if line[j] != line[k]
-                    smudge_avail = false
+                    smudges += 1
                 end
-                if j == 1 || k == n
-                    return i
+                if (j == 1 || k == n)   
+                    if smudges == n_smudges
+                        return i
+                    else
+                        break
+                    end
                 end
                 j = j - 1
                 k = k + 1
@@ -72,7 +56,7 @@ function hash_mirror(mirror)
     return (x_hash, y_hash)
 end
 
-f = open("./inputs/day13_sample.txt", "r")
+f = open("./inputs/day13.txt", "r")
 lines = readlines(f)
 
 global bins = [2^(i-1) for i in 1:100]
@@ -84,16 +68,14 @@ count = 1
 for line in lines
     if length(line) == 0
         (x_hash, y_hash) = hash_mirror(mirror)
-        #println(find_smudge(x_hash))
 
-        global sum1 += 100*find_mirror(x_hash)
-        global sum1 += find_mirror(y_hash)
-        global sum2 += 100*find_smudge(x_hash)
-
-        #if find_smudge(x_hash) != find_mirror(x_hash)
-            println(count, " ", find_mirror(x_hash)," ", find_smudge(x_hash)," ", x_hash)
-        #end
-        #println(count," ", find_smudge(x_hash), " - ",x_hash)
+        global sum1 += 100*find_reflection(x_hash, 0)
+        global sum1 += find_reflection(y_hash, 0)
+        global sum2 += 100*find_reflection(x_hash, 1)
+        global sum2 += find_reflection(y_hash, 1)
+        println(count-1, " ",find_reflection(x_hash, 1), " ", find_reflection(x_hash, 0))
+        println(x_hash)
+        #println(count-1, " ",find_reflection(y_hash, 1), " ", find_reflection(y_hash, 0))
         global mirror = []
         global count += 1
         continue
